@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Products{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="row category-sec">
+        <div class="col-md-3">
+            <h2 class="mb-3">Categories</h2>
+            <ul class="list-group custom-list-group">
+                <li class="list-group-item {% if not category %}active{% endif %}">
+                    <a href="{% url 'shop:product_list' %}" class="text-decoration-none {% if not category %}text-white{% endif %}">All</a>
+                </li>
+                {% for c in categories %}
+                    <li class="list-group-item {% if category.slug == c.slug %}active{% endif %}">
+                        <a href="{% url 'shop:product_list_by_category' c.slug %}" class="text-decoration-none {% if category.slug == c.slug %}text-white{% endif %}">{{ c.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <h2 class="mb-3">{% if category %}{{ category.name }}{% else %}Products{% endif %}</h2>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 p-3">
+                            <div class="product-img img-wrapper">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/no_image.png' %}" class="card-img-top" alt="No Image">
+                            {% endif %}
+                        </div>
+                            <div class="card-body p-0 mt-3">
+                                <h3 class="card-title">{{ product.name }}</h3>
+                                <div class="price d-flex gap-2 align-items-center mb-2">
+                                    {% if product.is_on_sale %}
+                                    <span class="text-danger">${{ product.discounted_price }}</span>
+                                        <span class="text-muted"><del>${{ product.price }}</del></span>
+                                    {% else %}
+                                        <span>${{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'shop:product_detail' product.id product.slug %}" class="btn btn-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
